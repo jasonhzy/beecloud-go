@@ -46,21 +46,21 @@ func (this *WxController) RegisterWx() {
 }
 
 //设置请求参数
-func (this *WxController) SetParameter(key string, value string){
+func (this WxController) SetParameter(key string, value string){
 	this.parameters = make(map[string]string)
 	this.parameters[key] = value
 }
 
-func (this *WxController) SetCode(code string){
+func (this WxController) SetCode(code string){
 	this.code = code
 }
 
 //设置prepay_id
-func (this *WxController) SetPrepayId (prepayId string) {
+func (this WxController) SetPrepayId (prepayId string) {
 	this.prepay_id = prepayId
 }
 
-func (this *WxController) CreateOauthUrlForCode(redirectUrl string) string {
+func (this WxController) CreateOauthUrlForCode(redirectUrl string) string {
 	urlObj := make(map[string]string)
 	urlObj["appid"] = this.appid
 	urlObj["redirect_uri"] = url.QueryEscape(redirectUrl)
@@ -75,7 +75,7 @@ func (this *WxController) CreateOauthUrlForCode(redirectUrl string) string {
 }
 
 //生成可以获得openid的url
-func (this *WxController) CreateOauthUrlForOpenid() string {
+func (this WxController) CreateOauthUrlForOpenid() string {
 	urlObj := make(map[string]string)
 	urlObj["appid"] = this.appid
 	urlObj["secret"] = this.appsecret
@@ -105,7 +105,7 @@ func (this WxController) GetOpenid() (string, error) {
 	return reflect.ValueOf(res["openid"]).String(), nil
 }
 
-func (this *WxController) CreateXml() (string, error) {
+func (this WxController) CreateXml() (string, error) {
 	fmt.Printf("%s", this.parameters)
 	//检测必填参数
 	if this.parameters["out_trade_no"] == ""  {
@@ -157,7 +157,7 @@ func (this WxController) GetPrepayId() (string, error) {
 	return reflect.ValueOf(res["prepay_id"]).String(), nil
 }
 
-func (this *WxController) GetJsapiParameters() map[string]string {
+func (this WxController) GetJsapiParameters() map[string]string {
 	var jsApiObj map[string]string
 	jsApiObj["appId"] = this.appid
 	jsApiObj["timeStamp"] = strconv.FormatInt(time.Now().Unix(), 10)
