@@ -37,6 +37,13 @@ type WxController struct{
 	prepay_id string
 }
 
+func (this *WxController) RegisterWx() {
+	this.appid = appid
+	this.appsecret = appsecret
+	this.mchid = mchid
+	this.key = key
+}
+
 //设置请求参数
 func (this WxController) SetParameter(key string, value string){
 	this.parameters[key] = value

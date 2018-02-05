@@ -327,18 +327,20 @@ func (this *PayController) ToPay() {
 	}
 }
 
-
 func (this *PayController) JsApiPay(bill map[string]interface{}, channel string){
-	//获取openid
-	var openid string
-	var openidErr error
 	//定义的三种方式
 	//wx := &wxClass.WxController{}
 	//wx := new(wxClass.WxController)
-	wxCode := this.GetString("code")
 	wx := wxClass.WxController{}
+	wx.RegisterWx()
+
+	//获取openid
+	var openid string
+	var openidErr error
+
+	wxCode := this.GetString("code")
 	if wxCode == "" {
-		this.Redirect(wx.CreateOauthUrlForCode("http://gosdk.cn/wxpay/demo?type=" + channel), 302)
+		this.Redirect(wx.CreateOauthUrlForCode("http://test3.beecloud.cn/wxpay/demo?type=" + channel), 302)
 	}else{
 		wx.SetCode(wxCode)
 		openid, openidErr = wx.GetOpenid()
@@ -791,6 +793,7 @@ func (this PayController) RefundStatus() {
 			if result_code.IsValid() && result_code.Float() > 0 {
 				this.Print("refund status query result: " + reflect.ValueOf(res["err_detail"]).String())
 			}
+
 			this.printJson(res)
 		default:
 			this.Print("No this channel")
