@@ -298,7 +298,7 @@ func (this PayController) ToPay() {
 
 	if url.IsValid() && url.String() != "" {
 		this.Redirect(url.String(), 302)
-	}else if  url.IsValid() && code_url.String() != "" {
+	}else if  code_url.IsValid() && code_url.String() != "" {
 		if channel == "WX_NATIVE" || channel == "BC_NATIVE" || channel == "BC_ALI_QRCODE" || channel == "BC_QQ_NATIVE" || channel == "BC_JD_QRCODE" {
 			this.Data["title"] = channel + "支付"
 			this.Data["channel"] = channel
