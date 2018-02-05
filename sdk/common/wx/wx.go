@@ -59,7 +59,7 @@ func (this WxController) SetPrepayId (prepayId string) {
 	this.prepay_id = prepayId
 }
 
-func (this WxController) CreateOauthUrlForCode(redirectUrl string) string {
+func (this *WxController) CreateOauthUrlForCode(redirectUrl string) string {
 	urlObj := make(map[string]string)
 	urlObj["appid"] = this.appid
 	urlObj["redirect_uri"] = url.QueryEscape(redirectUrl)
@@ -71,7 +71,7 @@ func (this WxController) CreateOauthUrlForCode(redirectUrl string) string {
 }
 
 //生成可以获得openid的url
-func (this WxController) CreateOauthUrlForOpenid() string {
+func (this *WxController) CreateOauthUrlForOpenid() string {
 	urlObj := make(map[string]string)
 	urlObj["appid"] = this.appid
 	urlObj["secret"] = this.appsecret
