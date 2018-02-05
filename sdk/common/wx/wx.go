@@ -46,17 +46,17 @@ func (this *WxController) RegisterWx() {
 }
 
 //设置请求参数
-func (this WxController) SetParameter(key string, value string){
+func (this *WxController) SetParameter(key string, value string){
 	this.parameters = make(map[string]string)
 	this.parameters[key] = value
 }
 
-func (this WxController) SetCode(code string){
+func (this *WxController) SetCode(code string){
 	this.code = code
 }
 
 //设置prepay_id
-func (this WxController) SetPrepayId (prepayId string) {
+func (this *WxController) SetPrepayId (prepayId string) {
 	this.prepay_id = prepayId
 }
 
