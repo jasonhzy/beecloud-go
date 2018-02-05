@@ -27,6 +27,12 @@ func (this PayController) Print(strMsg string) {
 	this.StopRun()
 }
 
+func (this PayController) printJson (jsonObj map[string]interface{}){
+	this.Data["json"] = jsonObj
+	this.ServeJSON()
+	return
+}
+
 func (this PayController) GetClientIp() string {
 	ip := this.Ctx.Request.Header.Get("Remote_addr")
 	if ip == "" {
@@ -374,20 +380,24 @@ func (this PayController) BillStatus() {
 	var payErr error
 	var res map[string]interface{}
 	jsonObj := make(map[string]interface{})
+	jsonObj["result_code"] = 1
 	switch channel {
 		case "BC_QQ_NATIVE", "BC_JD_QRCODE", "BC_NATIVE", "BC_ALI_QRCODE":
 			result, payErr = this.Bills(conditions)
 			if payErr != nil {
-				this.Print(payErr.Error())
+				jsonObj["err_detail"] = payErr.Error()
+				this.printJson(jsonObj)
 			}
 
 			err := json.Unmarshal([]byte(result), &res)
 			if err != nil {
-				this.Print(err.Error())
+				jsonObj["err_detail"] = err.Error()
+				this.printJson(jsonObj)
 			}
 			result_code := reflect.ValueOf(res["result_code"])
 			if result_code.IsValid() && result_code.Float() > 0 {
-				this.Print("bill status query result: " + reflect.ValueOf(res["err_detail"]).String())
+				jsonObj["err_detail"] = "bill status query result: " + reflect.ValueOf(res["err_detail"]).String()
+				this.printJson(jsonObj)
 			}
 
 			var pay_result bool = false
@@ -406,25 +416,25 @@ func (this PayController) BillStatus() {
 		case "ALI_OFFLINE_QRCODE", "ALI_SCAN", "WX_SCAN", "WX_NATIVE":
 			result, payErr = this.Offline_bill_status(conditions)
 			if payErr != nil {
-				this.Print(payErr.Error())
+				jsonObj["err_detail"] = payErr.Error()
+				this.printJson(jsonObj)
 			}
 			err := json.Unmarshal([]byte(result), &res)
 			if err != nil {
-				this.Print(err.Error())
+				jsonObj["err_detail"] = err.Error()
+				this.printJson(jsonObj)
 			}
 			result_code := reflect.ValueOf(res["result_code"])
 			if result_code.IsValid() && result_code.Float() > 0 {
-				this.Print("bill status query result: " + reflect.ValueOf(res["err_detail"]).String())
+				jsonObj["err_detail"] = "bill status query result: " + reflect.ValueOf(res["err_detail"]).String()
+				this.printJson(jsonObj)
 			}
 			jsonObj["result_code"] = 0
 			jsonObj["pay_result"] = reflect.ValueOf(res["pay_result"]).Bool()
 		default:
 			this.Print("No this channel")
 	}
-
-	this.Data["json"] = jsonObj
-	this.ServeJSON()
-	return
+	this.printJson(jsonObj)
 }
 
 /**
@@ -781,10 +791,7 @@ func (this PayController) RefundStatus() {
 			if result_code.IsValid() && result_code.Float() > 0 {
 				this.Print("refund status query result: " + reflect.ValueOf(res["err_detail"]).String())
 			}
-
-			this.Data["json"] = res
-			this.ServeJSON()
-			return
+			this.printJson(res)
 		default:
 			this.Print("No this channel")
 	}
