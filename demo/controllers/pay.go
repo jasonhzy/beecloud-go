@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"time"
 	"strings"
+	"fmt"
 )
 
 type PayController struct {
@@ -349,6 +350,9 @@ func (this *PayController) JsApiPay(bill map[string]interface{}, channel string)
 		}
 	}
 	bill["openid"] = openid
+
+	fmt.Printf("===%s", bill)
+	fmt.Println("")
 
 	wx.SetParameter("openid", openid)
 	wx.SetParameter("out_trade_no", reflect.ValueOf(bill["bill_no"]).String())

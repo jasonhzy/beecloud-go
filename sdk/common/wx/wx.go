@@ -106,6 +106,7 @@ func (this WxController) GetOpenid() (string, error) {
 }
 
 func (this *WxController) CreateXml() (string, error) {
+	fmt.Printf("%s", this.parameters)
 	//检测必填参数
 	if this.parameters["out_trade_no"] == ""  {
 		return "", this.Error("缺少统一支付接口必填参数out_trade_no(商户订单号)！", nil)
