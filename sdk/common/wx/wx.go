@@ -6,6 +6,7 @@ import (
 	"reflect"
 	"strconv"
 	"time"
+	"fmt"
 )
 
 const (
@@ -67,6 +68,9 @@ func (this *WxController) CreateOauthUrlForCode(redirectUrl string) string {
 	urlObj["scope"] = "snsapi_base"
 	urlObj["state"] = "STATE#wechat_redirect"
 	codeStr := this.FormatParams(urlObj)
+
+	fmt.Printf("%s", oauth_code_url + "?" + codeStr)
+
 	return oauth_code_url + "?" + codeStr
 }
 
