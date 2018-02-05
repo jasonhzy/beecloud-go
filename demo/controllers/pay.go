@@ -38,7 +38,7 @@ func (this PayController) GetClientIp() string {
 	return ip
 }
 
-func (this PayController) ToPay() {
+func (this *PayController) ToPay() {
 	this.RegisterApp()
 	channel := this.GetString("type") //渠道
 	timestamp := this.GetTimestamp()
@@ -298,7 +298,7 @@ func (this PayController) ToPay() {
 
 	if url.IsValid() && url.String() != "" {
 		this.Redirect(url.String(), 302)
-	}else if  code_url.IsValid() && code_url.String() != "" {
+	}else if code_url.IsValid() && code_url.String() != "" {
 		if channel == "WX_NATIVE" || channel == "BC_NATIVE" || channel == "BC_ALI_QRCODE" || channel == "BC_QQ_NATIVE" || channel == "BC_JD_QRCODE" {
 			this.Data["title"] = channel + "支付"
 			this.Data["channel"] = channel
@@ -322,7 +322,7 @@ func (this PayController) ToPay() {
 }
 
 
-func (this PayController) JsApiPay(bill map[string]interface{}, channel string){
+func (this *PayController) JsApiPay(bill map[string]interface{}, channel string){
 	//获取openid
 	var openid string
 	var openidErr error
@@ -432,7 +432,7 @@ func (this PayController) BillStatus() {
  *  参考文档：https://beecloud.cn/doc/#4-4
  *
  */
-func (this PayController) BillQuery() {
+func (this *PayController) BillQuery() {
 	channel := this.GetString("type")
 	var title string
 	switch channel {
@@ -502,7 +502,7 @@ func (this PayController) BillQuery() {
 	this.TplName = "bills.tpl"
 }
 
-func (this PayController) BillID() {
+func (this *PayController) BillID() {
 	bill_id := this.GetString("id")
 	if bill_id == "" {
 		this.Print("请输入订单唯一标识ID")
@@ -650,7 +650,7 @@ func (this PayController) ToRefund(){
 	this.Print(title + "退款成功, 退款表记录唯一标识ID:" + reflect.ValueOf(res["id"]).String() )
 }
 
-func (this PayController) RefundQuery() {
+func (this *PayController) RefundQuery() {
 	channel := this.GetString("type")
 	var title string
 	switch channel {
@@ -720,7 +720,7 @@ func (this PayController) RefundQuery() {
 	this.TplName = "bills.tpl"
 }
 
-func (this PayController) RefundID() {
+func (this *PayController) RefundID() {
 	refund_id := this.GetString("id")
 	if refund_id == "" {
 		this.Print("请输入退款单唯一标识ID")
