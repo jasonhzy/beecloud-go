@@ -290,33 +290,34 @@ func (this PayController) ToPay() {
 		this.Print("pay result: " + reflect.ValueOf(res["err_detail"]).String())
 	}
 
-	url := reflect.ValueOf(res["url"]).String()
-	html := reflect.ValueOf(res["html"]).String()
-	code_url := reflect.ValueOf(res["code_url"]).String()
-	credit_card_id := reflect.ValueOf(res["credit_card_id"]).String()
-	id := reflect.ValueOf(res["id"]).String()
-	if url != "" {
-		this.Redirect(url, 302)
-	}else if code_url != "" {
+	url := reflect.ValueOf(res["url"])
+	html := reflect.ValueOf(res["html"])
+	code_url := reflect.ValueOf(res["code_url"])
+	credit_card_id := reflect.ValueOf(res["credit_card_id"])
+	id := reflect.ValueOf(res["id"])
+
+	if url.IsValid() && url.String() != "" {
+		this.Redirect(url.String(), 302)
+	}else if  url.IsValid() && code_url.String() != "" {
 		if channel == "WX_NATIVE" || channel == "BC_NATIVE" || channel == "BC_ALI_QRCODE" || channel == "BC_QQ_NATIVE" || channel == "BC_JD_QRCODE" {
 			this.Data["title"] = channel + "支付"
 			this.Data["channel"] = channel
 			this.Data["id"] = reflect.ValueOf(res["id"])
 			this.Data["bill_no"] = reflect.ValueOf(bill["bill_no"])
-			this.Data["code_url"] = code_url
+			this.Data["code_url"] = code_url.String()
 			this.TplName = "qrcode.tpl"
 		}else{
-			this.Redirect(code_url, 302)
+			this.Redirect(code_url.String(), 302)
 		}
-	}else if html != "" {
+	}else if html.IsValid() && html.String() != "" {
 		//this.Data["channel"] = channel + "支付"
 		//this.Data["content"] = template.HTML(html.String())
 		//this.TplName = "pay.tpl"
-		this.Print("<html><head><meta charset=\"UTF-8\"></head><body>" + html + "</body></html>")
-	}else if credit_card_id != "" {
-		this.Print("信用卡id(PAYPAL_CREDITCARD): " + credit_card_id)
-	}else if id != "" {
-		this.Print("支付成功:" + id)
+		this.Print("<html><head><meta charset=\"UTF-8\"></head><body>" + html.String() + "</body></html>")
+	}else if credit_card_id.IsValid() && credit_card_id.String() != "" {
+		this.Print("信用卡id(PAYPAL_CREDITCARD): " + credit_card_id.String())
+	}else if id.IsValid() && id.String() != "" {
+		this.Print("支付成功:" + id.String())
 	}
 }
 
