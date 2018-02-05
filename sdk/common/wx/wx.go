@@ -46,6 +46,7 @@ func (this *WxController) RegisterWx() {
 
 //设置请求参数
 func (this WxController) SetParameter(key string, value string){
+	this.parameters = make(map[string]string)
 	this.parameters[key] = value
 }
 
