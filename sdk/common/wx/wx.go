@@ -97,10 +97,10 @@ func (this WxController) GetOpenid() (string, error) {
 		return "", this.Error("get openid json error", jsonErr)
 	}
 
-	errcode := reflect.ValueOf(res["errcode"]).Float()
-	if errcode > 0 {
+	errcode := reflect.ValueOf(res["errcode"])
+	if errcode.IsValid() && errcode.Float() > 0 {
 		errmsg := reflect.ValueOf(res["errmsg"]).String()
-		return "", this.Error("get openid result error: " + strconv.FormatFloat(errcode, 'g', 1, 64) + errmsg, nil)
+		return "", this.Error("get openid result error: " + strconv.FormatFloat(errcode.Float(), 'g', 1, 64) + errmsg, nil)
 	}
 	return reflect.ValueOf(res["openid"]).String(), nil
 }
