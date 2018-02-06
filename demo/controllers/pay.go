@@ -163,7 +163,7 @@ func (this *PayController) ToPay() {
 		case "WX_JSAPI": //微信公众号
 			bill["channel"] = "WX_JSAPI"
 			//获取openid
-			this.JsApiPay(bill)
+			this.JsApiPay(bill, channel)
 		case "WX_WAP": //微信H5网页, 请在手机浏览器内测试
 			bill["channel"] = "WX_WAP"
 			//需要参数终端ip，格式如下：
@@ -255,7 +255,7 @@ func (this *PayController) ToPay() {
 		case "BC_WX_JSAPI": //微信公众号
 			bill["channel"] = "BC_WX_JSAPI"
 			//获取openid
-			this.JsApiPay(bill)
+			this.JsApiPay(bill, channel)
 		case "BC_ALI_QRCODE" : //BC支付宝线下扫码
 			bill["channel"] = "BC_ALI_QRCODE"
 		case "BC_ALI_SCAN" : //BC支付宝刷卡
@@ -274,7 +274,7 @@ func (this *PayController) ToPay() {
 
 	//get openid
 	if this.In_array(channel, []string{"WX_JSAPI", "BC_WX_JSAPI"}) {
-		this.JsApiPay(bill)
+		this.JsApiPay(bill, channel)
 	}
 
 	var result []byte
@@ -284,8 +284,7 @@ func (this *PayController) ToPay() {
 	}else if this.In_array(channel, []string{"ALI_OFFLINE_QRCODE", "ALI_SCAN", "BC_ALI_SCAN", "WX_SCAN", "BC_WX_SCAN"}) {
 		result, payErr = this.Offline_bill(bill)
 	}else {
-		//result, payErr = this.Bill(bill)
-		result = []byte(`{"package":"prepay_id=wx20180206145845a189f89a200915791699", "id":"f861aec5-7e4a-411f-8d2f-a83be667dad8", "app_id":"wx119a2bda81854ae0", "pay_sign":"A77AC8137FA150BEFA5561C3FDC73A87", "sign_type":"MD5", "timestamp":1517900325, "nonce_str":"godemo1517900324270", "resultCode":0,"result_code":0}`)
+		result, payErr = this.Bill(bill)
 	}
 	if(payErr != nil){
 		this.Print(payErr.Error())
@@ -360,7 +359,7 @@ func (this *PayController) ToPay() {
 	}
 }
 
-func (this *PayController) JsApiPay(bill map[string]interface{}) {
+func (this *PayController) JsApiPay(bill map[string]interface{}, channel string) {
 	//定义的三种方式
 	//wx := &wxClass.WxController{}
 	//wx := new(wxClass.WxController)
@@ -369,19 +368,19 @@ func (this *PayController) JsApiPay(bill map[string]interface{}) {
 
 	//获取openid
 	var openid string
-	//var openidErr error
-	//
-	//wxCode := this.GetString("code")
-	//if wxCode == "" {
-	//	this.Redirect(wx.CreateOauthUrlForCode("http://test3.beecloud.cn/wxpay/demo?type=" + channel), 302)
-	//}else{
-	//	wx.SetCode(wxCode)
-	//	openid, openidErr = wx.GetOpenid()
-	//	if openidErr != nil {
-	//		this.Print(openidErr.Error())
-	//	}
-	//}
-	openid = "ofEy7uK2JsSOXVpHHYErRPtrdVWg"
+	var openidErr error
+
+	wxCode := this.GetString("code")
+	if wxCode == "" {
+		this.Redirect(wx.CreateOauthUrlForCode("http://test3.beecloud.cn/wxpay/demo?type=" + channel), 302)
+	}else{
+		wx.SetCode(wxCode)
+		openid, openidErr = wx.GetOpenid()
+		if openidErr != nil {
+			this.Print(openidErr.Error())
+		}
+	}
+	//openid = "ofEy7uK2JsSOXVpHHYErRPtrdVWg"
 	bill["openid"] = openid
 
 	//wx.SetParameter("openid", openid)
