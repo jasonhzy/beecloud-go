@@ -8,7 +8,7 @@ import (
 func init() {
     beego.Router("/", &controllers.MainController{})
 	beego.Router("/bill", &controllers.PayController{}, "get:ToPay") //支付
-	beego.Router("/wxpay/demo", &controllers.PayController{}, "get:ToPay") //支付
+	beego.Router("/wxpay/demo/pay", &controllers.PayController{}, "get:ToPay") //支付
 	beego.Router("/bill/query", &controllers.PayController{}, "get:BillQuery") //订单查询
 	beego.Router("/bill/id", &controllers.PayController{}, "get:BillID") //支付订单查询(指定id)
 	beego.Router("/bill/status", &controllers.PayController{}, "get:BillStatus") //订单状态查询
