@@ -7,7 +7,6 @@ import (
 	"strconv"
 	"time"
 	"encoding/xml"
-	"fmt"
 )
 
 const (
@@ -71,9 +70,6 @@ func (this WxController) CreateOauthUrlForCode(redirectUrl string) string {
 	urlObj["scope"] = "snsapi_base"
 	urlObj["state"] = "STATE#wechat_redirect"
 	codeStr := this.FormatParams(urlObj)
-
-	fmt.Printf("%s", oauth_code_url + "?" + codeStr)
-
 	return oauth_code_url + "?" + codeStr
 }
 
@@ -103,7 +99,7 @@ func (this WxController) GetOpenid() (string, error) {
 	errcode := reflect.ValueOf(res["errcode"])
 	if errcode.IsValid() && errcode.Float() > 0 {
 		errmsg := reflect.ValueOf(res["errmsg"]).String()
-		return "", this.Error("get openid result error: " + strconv.FormatFloat(errcode.Float(), 'g', 1, 64) + errmsg, nil)
+		return "", this.Error("get openid result error: " + strconv.FormatFloat(errcode.Float(), 'f', 0, 64) + errmsg, nil)
 	}
 	return reflect.ValueOf(res["openid"]).String(), nil
 }
@@ -146,25 +142,14 @@ type XmlResp struct {
 }
 
 func (this WxController) GetPrepayId() (string, error) {
-	//strXml, err := this.CreateXml()
-	//if err != nil {
-	//	return "", this.Error("get prepay_id error", err)
-	//}
-	//result, err := this.http_post(pay_url, strXml)
-	//if err != nil {
-	//	return "", this.Error("get prepay_id error", err)
-	//}
-	//result := []byte("<xml><return_code1><![CDATA[FAIL]]></return_code1><return_msg><![CDATA[mch_id参数格式错误]]></return_msg></xml>")
-	result := []byte("<xml><return_code><![CDATA[SUCCESS]]></return_code>" +
-		"<return_msg><![CDATA[OK]]></return_msg>" +
-		"<appid><![CDATA[wx119a2bda81854ae0]]></appid>" +
-		"<mch_id><![CDATA[1268170701]]></mch_id>" +
-		"<nonce_str><![CDATA[52QaLgEoIUo6ebXV]]></nonce_str>" +
-		"<sign><![CDATA[B14A531915EF3195BC66D2926208FDE4]]></sign>" +
-		"<result_code><![CDATA[SUCCESS]]></result_code>" +
-		"<prepay_id><![CDATA[wx20180206122650fd89fe1c460940115432]]></prepay_id>" +
-		"<trade_type><![CDATA[JSAPI]]></trade_type>" +
-		"</xml>")
+	strXml, err := this.CreateXml()
+	if err != nil {
+		return "", this.Error("get prepay_id error", err)
+	}
+	result, err := this.http_post(pay_url, strXml)
+	if err != nil {
+		return "", this.Error("get prepay_id error", err)
+	}
 
 	res := new(XmlResp)
 	xmlErr :=  xml.Unmarshal(result, &res)
