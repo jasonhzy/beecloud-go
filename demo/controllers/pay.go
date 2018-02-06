@@ -10,7 +10,6 @@ import (
 	"strconv"
 	"time"
 	"strings"
-	"fmt"
 )
 
 type PayController struct {
@@ -270,7 +269,7 @@ func (this *PayController) ToPay() {
 
 	//微信支付 get openid
 	if this.In_array(channel, []string{"WX_JSAPI", "BC_WX_JSAPI"}) {
-		this.JsApiPay(bill, channel)
+		this.GetOpenid(bill, channel)
 	}
 
 	var result []byte
@@ -318,7 +317,6 @@ func (this *PayController) ToPay() {
 		if appId.String() == "" || strPackage.String() == "" || signType.String() == "" || paySign.String() == ""  || timeStamp.String() == "" {
 			this.Print("wx pay params is empty")
 		}
-		fmt.Printf("%s", res)
 
 		jsapiParameters := make(map[string]string)
 		jsapiParameters["appId"] = appId.String()
@@ -327,8 +325,6 @@ func (this *PayController) ToPay() {
 		jsapiParameters["package"] = strPackage.String()
 		jsapiParameters["signType"] = signType.String()
 		jsapiParameters["paySign"] = paySign.String()
-
-		fmt.Printf("%s", jsapiParameters)
 
 		this.Data["jsapi"] = jsapiParameters
 		this.Data["channel"] = "JSAPI"
@@ -358,7 +354,7 @@ func (this *PayController) ToPay() {
 	}
 }
 
-func (this *PayController) JsApiPay(bill map[string]interface{}, channel string) {
+func (this *PayController) GetOpenid(bill map[string]interface{}, channel string) {
 	//定义的三种方式
 	//wx := &wxClass.WxController{}
 	//wx := new(wxClass.WxController)
@@ -379,26 +375,7 @@ func (this *PayController) JsApiPay(bill map[string]interface{}, channel string)
 			this.Print(openidErr.Error())
 		}
 	}
-	//openid = "ofEy7uK2JsSOXVpHHYErRPtrdVWg"
 	bill["openid"] = openid
-
-	//wx.SetParameter("openid", openid)
-	//wx.SetParameter("out_trade_no", reflect.ValueOf(bill["bill_no"]).String())
-	//wx.SetParameter("total_fee", strconv.FormatInt(reflect.ValueOf(bill["total_fee"]).Int(), 10))
-	//wx.SetParameter("trade_type", "JSAPI")
-	//wx.SetParameter("body", reflect.ValueOf(bill["title"]).String())
-	//wx.SetParameter("notify_url", "http://test3.beecloud.cn/notify")
-	//wx.SetParameter("spbill_create_ip", this.GetClientIp())
-
-	//prepay_id, err := wx.GetPrepayId()
-	//if err != nil {
-	//	this.Print(err.Error())
-	//}
-	//wx.SetPrepayId(prepay_id)
-
-	//this.Data["jsapi"] = wx.GetJsapiParameters()
-	//this.Data["channel"] = "JSAPI"
-	//this.TplName = "pay.tpl"
 }
 
 func (this PayController) BillStatus() {
