@@ -10,8 +10,6 @@ import (
 	"strconv"
 	"time"
 	"strings"
-	"fmt"
-	"net/url"
 )
 
 type PayController struct {
@@ -305,11 +303,6 @@ func (this *PayController) ToPay() {
 		this.Print("pay result: " + reflect.ValueOf(res["err_detail"]).String())
 	}
 
-	fmt.Printf("%s", res)
-	this.StopRun()
-
-
-
 	url := reflect.ValueOf(res["url"])
 	html := reflect.ValueOf(res["html"])
 	code_url := reflect.ValueOf(res["code_url"])
@@ -323,19 +316,19 @@ func (this *PayController) ToPay() {
 		paySign := reflect.ValueOf(res["pay_sign"])
 		timeStamp := reflect.ValueOf(res["timestamp"])
 
-		if appId.IsValid() || strPackage.IsValid() || signType.IsValid() || paySign.IsValid()  || timeStamp.IsValid() {
+		if !appId.IsValid() || !strPackage.IsValid() || !signType.IsValid() || !paySign.IsValid()  || !timeStamp.IsValid() {
 			this.Print("wx pay params invalid")
 		}
 		if appId.String() == "" || strPackage.String() == "" || signType.String() == "" || paySign.String() == ""  || timeStamp.Float() == 0 {
 			this.Print("wx pay params is empty")
 		}
 
-		jsapiParameters := url.Values{}
-		jsapiParameters.Set("appId", appId.String())
-		jsapiParameters.Set("package", strPackage.String())
-		jsapiParameters.Set("signType", signType.String())
-		jsapiParameters.Set("paySign", paySign.String())
-		jsapiParameters.Set("timeStamp", strconv.FormatFloat(timeStamp.Float(), 'f', 0, 64))
+		jsapiParameters := make(map[string]interface{})
+		jsapiParameters["appId"] = appId.String()
+		jsapiParameters["timeStamp"] = timeStamp.Float()
+		jsapiParameters["package"] = strPackage.String()
+		jsapiParameters["signType"] = signType.String()
+		jsapiParameters["paySign"] = paySign.String()
 
 		this.Data["jsapi"] = jsapiParameters
 		this.Data["channel"] = "JSAPI"
