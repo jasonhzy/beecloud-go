@@ -314,6 +314,7 @@ func (this *PayController) ToPay() {
 		strPackage := reflect.ValueOf(res["package"])
 		signType := reflect.ValueOf(res["sign_type"])
 		paySign := reflect.ValueOf(res["pay_sign"])
+		nonceStr := reflect.ValueOf(res["nonce_str"])
 		timeStamp := reflect.ValueOf(res["timestamp"])
 
 		if !appId.IsValid() || !strPackage.IsValid() || !signType.IsValid() || !paySign.IsValid()  || !timeStamp.IsValid() {
@@ -326,6 +327,7 @@ func (this *PayController) ToPay() {
 		jsapiParameters := make(map[string]interface{})
 		jsapiParameters["appId"] = appId.String()
 		jsapiParameters["timeStamp"] = timeStamp.Float()
+		jsapiParameters["nonceStr"] = nonceStr.String()
 		jsapiParameters["package"] = strPackage.String()
 		jsapiParameters["signType"] = signType.String()
 		jsapiParameters["paySign"] = paySign.String()
