@@ -6,6 +6,7 @@ import (
 	"reflect"
 	"strconv"
 	"time"
+	"encoding/xml"
 	"fmt"
 )
 
@@ -47,7 +48,9 @@ func (this *WxController) RegisterWx() {
 
 //设置请求参数
 func (this *WxController) SetParameter(key string, value string){
-	this.parameters = make(map[string]string)
+	if(this.parameters == nil){
+		this.parameters = make(map[string]string)
+	}
 	this.parameters[key] = value
 }
 
@@ -106,7 +109,6 @@ func (this WxController) GetOpenid() (string, error) {
 }
 
 func (this WxController) CreateXml() (string, error) {
-	fmt.Printf("%s", this.parameters)
 	//检测必填参数
 	if this.parameters["out_trade_no"] == ""  {
 		return "", this.Error("缺少统一支付接口必填参数out_trade_no(商户订单号)！", nil)
@@ -133,32 +135,57 @@ func (this WxController) CreateXml() (string, error) {
 	return  this.ParamsToXml(this.parameters), nil
 }
 
+
+type XmlResp struct {
+	Return_code string `xml:"return_code"`
+	Return_msg  string `xml:"return_msg"`
+	Result_code string `xml:"result_code"`
+	Err_code string `xml:"err_code"`
+	Err_code_des string `xml:"err_code_des"`
+	Prepay_id   string `xml:"prepay_id"`
+}
+
 func (this WxController) GetPrepayId() (string, error) {
-	xml, err := this.CreateXml()
-	if err != nil {
-		return "", this.Error("get prepay_id error", err)
+	//strXml, err := this.CreateXml()
+	//if err != nil {
+	//	return "", this.Error("get prepay_id error", err)
+	//}
+	//result, err := this.http_post(pay_url, strXml)
+	//if err != nil {
+	//	return "", this.Error("get prepay_id error", err)
+	//}
+	//result := []byte("<xml><return_code1><![CDATA[FAIL]]></return_code1><return_msg><![CDATA[mch_id参数格式错误]]></return_msg></xml>")
+	result := []byte("<xml><return_code><![CDATA[SUCCESS]]></return_code>" +
+		"<return_msg><![CDATA[OK]]></return_msg>" +
+		"<appid><![CDATA[wx119a2bda81854ae0]]></appid>" +
+		"<mch_id><![CDATA[1268170701]]></mch_id>" +
+		"<nonce_str><![CDATA[52QaLgEoIUo6ebXV]]></nonce_str>" +
+		"<sign><![CDATA[B14A531915EF3195BC66D2926208FDE4]]></sign>" +
+		"<result_code><![CDATA[SUCCESS]]></result_code>" +
+		"<prepay_id><![CDATA[wx20180206122650fd89fe1c460940115432]]></prepay_id>" +
+		"<trade_type><![CDATA[JSAPI]]></trade_type>" +
+		"</xml>")
+
+	res := new(XmlResp)
+	xmlErr :=  xml.Unmarshal(result, &res)
+	if xmlErr != nil {
+		return "", this.Error("get prepay_id xml error", xmlErr)
+	}
+	if res.Return_code != "SUCCESS" {
+		return "", this.Error("get prepay_id result error: " + res.Return_msg, nil)
 	}
 
-	result, err := this.http_post(pay_url, xml)
-	if err != nil {
-		return "", this.Error("get prepay_id error", err)
+	if res.Result_code != "SUCCESS" {
+		return "", this.Error("get prepay_id result error: " + res.Err_code + "-" + res.Err_code_des, nil)
 	}
-	var res map[string]interface{}
-	jsonErr := json.Unmarshal([]byte(result), &res)
-	if err != nil {
-		return "", this.Error("get prepay_id json error", jsonErr)
+	if res.Prepay_id == "" {
+		return "", this.Error("get prepay_id result error: not get prepay_id", nil )
 	}
-
-	errcode := reflect.ValueOf(res["errcode"]).Float()
-	if errcode > 0 {
-		errmsg := reflect.ValueOf(res["errmsg"]).String()
-		return "", this.Error("get prepay_id result error: " + strconv.FormatFloat(errcode, 'g', 1, 64) + errmsg, nil )
-	}
-	return reflect.ValueOf(res["prepay_id"]).String(), nil
+	return res.Prepay_id, nil
 }
 
 func (this WxController) GetJsapiParameters() map[string]string {
-	var jsApiObj map[string]string
+	jsApiObj := make(map[string]string)
 	jsApiObj["appId"] = this.appid
 	jsApiObj["timeStamp"] = strconv.FormatInt(time.Now().Unix(), 10)
 	jsApiObj["nonceStr"] = this.CreateNoncestr(32)

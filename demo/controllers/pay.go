@@ -10,7 +10,6 @@ import (
 	"strconv"
 	"time"
 	"strings"
-	"fmt"
 )
 
 type PayController struct {
@@ -272,63 +271,65 @@ func (this *PayController) ToPay() {
 			this.Print("No this type.")
 	}
 
-	var result []byte
-	var payErr error
-	if this.In_array(channel, []string{"PAYPAL_PAYPAL", "PAYPAL_CREDITCARD", "PAYPAL_SAVED_CREDITCARD"}) {
-		result, payErr = this.International_bill(bill)
-	}else if this.In_array(channel, []string{"ALI_OFFLINE_QRCODE", "ALI_SCAN", "BC_ALI_SCAN", "WX_SCAN", "BC_WX_SCAN"}) {
-		result, payErr = this.Offline_bill(bill)
-	}else {
-		result, payErr = this.Bill(bill)
-	}
-	if(payErr != nil){
-		this.Print(payErr.Error())
-	}
-
-	var res map[string]interface{}
-	err := json.Unmarshal([]byte(result), &res)
-	if err != nil {
-		this.Print(err.Error())
-	}
-	//fmt.Printf("%s", res)
-	result_code := reflect.ValueOf(res["result_code"])
-	if result_code.IsValid() && result_code.Float() > 0 {
-		//fmt.Printf("%s", res)
-		this.Print("pay result: " + reflect.ValueOf(res["err_detail"]).String())
-	}
-
-	url := reflect.ValueOf(res["url"])
-	html := reflect.ValueOf(res["html"])
-	code_url := reflect.ValueOf(res["code_url"])
-	credit_card_id := reflect.ValueOf(res["credit_card_id"])
-	id := reflect.ValueOf(res["id"])
-
-	if url.IsValid() && url.String() != "" {
-		this.Redirect(url.String(), 302)
-	}else if code_url.IsValid() && code_url.String() != "" {
-		if channel == "WX_NATIVE" || channel == "BC_NATIVE" || channel == "BC_ALI_QRCODE" || channel == "BC_QQ_NATIVE" || channel == "BC_JD_QRCODE" {
-			this.Data["title"] = channel + "支付"
-			this.Data["channel"] = channel
-			this.Data["id"] = reflect.ValueOf(res["id"])
-			this.Data["bill_no"] = reflect.ValueOf(bill["bill_no"])
-			this.Data["code_url"] = code_url.String()
-			this.TplName = "qrcode.tpl"
-		}else{
-			this.Redirect(code_url.String(), 302)
+	if !this.In_array(channel, []string{"WX_JSAPI", "BC_WX_JSAPI"}) {
+		var result []byte
+		var payErr error
+		if this.In_array(channel, []string{"PAYPAL_PAYPAL", "PAYPAL_CREDITCARD", "PAYPAL_SAVED_CREDITCARD"}) {
+			result, payErr = this.International_bill(bill)
+		}else if this.In_array(channel, []string{"ALI_OFFLINE_QRCODE", "ALI_SCAN", "BC_ALI_SCAN", "WX_SCAN", "BC_WX_SCAN"}) {
+			result, payErr = this.Offline_bill(bill)
+		}else {
+			result, payErr = this.Bill(bill)
 		}
-	}else if html.IsValid() && html.String() != "" {
-		//this.Data["channel"] = channel + "支付"
-		//this.Data["content"] = template.HTML(html.String())
-		//this.TplName = "pay.tpl"
-		this.Print("<html><head><meta charset=\"UTF-8\"></head><body>" + html.String() + "</body></html>")
-	}else if credit_card_id.IsValid() && credit_card_id.String() != "" {
-		this.Print("信用卡id(PAYPAL_CREDITCARD): " + credit_card_id.String())
-	}else if id.IsValid() && id.String() != "" {
-		this.Print("支付成功:" + id.String())
+		if(payErr != nil){
+			this.Print(payErr.Error())
+		}
+
+		var res map[string]interface{}
+		err := json.Unmarshal([]byte(result), &res)
+		if err != nil {
+			this.Print(err.Error())
+		}
+		//fmt.Printf("%s", res)
+		result_code := reflect.ValueOf(res["result_code"])
+		if result_code.IsValid() && result_code.Float() > 0 {
+			//fmt.Printf("%s", res)
+			this.Print("pay result: " + reflect.ValueOf(res["err_detail"]).String())
+		}
+
+		url := reflect.ValueOf(res["url"])
+		html := reflect.ValueOf(res["html"])
+		code_url := reflect.ValueOf(res["code_url"])
+		credit_card_id := reflect.ValueOf(res["credit_card_id"])
+		id := reflect.ValueOf(res["id"])
+
+		if url.IsValid() && url.String() != "" {
+			this.Redirect(url.String(), 302)
+		}else if code_url.IsValid() && code_url.String() != "" {
+			if channel == "WX_NATIVE" || channel == "BC_NATIVE" || channel == "BC_ALI_QRCODE" || channel == "BC_QQ_NATIVE" || channel == "BC_JD_QRCODE" {
+				this.Data["title"] = channel + "支付"
+				this.Data["channel"] = channel
+				this.Data["id"] = reflect.ValueOf(res["id"])
+				this.Data["bill_no"] = reflect.ValueOf(bill["bill_no"])
+				this.Data["code_url"] = code_url.String()
+				this.TplName = "qrcode.tpl"
+			}else{
+				this.Redirect(code_url.String(), 302)
+			}
+		}else if html.IsValid() && html.String() != "" {
+			//this.Data["channel"] = channel + "支付"
+			//this.Data["content"] = template.HTML(html.String())
+			//this.TplName = "pay.tpl"
+			this.Print("<html><head><meta charset=\"UTF-8\"></head><body>" + html.String() + "</body></html>")
+		}else if credit_card_id.IsValid() && credit_card_id.String() != "" {
+			this.Print("信用卡id(PAYPAL_CREDITCARD): " + credit_card_id.String())
+		}else if id.IsValid() && id.String() != "" {
+			this.Print("支付成功:" + id.String())
+		}
 	}
 }
 
-func (this *PayController) JsApiPay(bill map[string]interface{}, channel string){
+func (this *PayController) JsApiPay(bill map[string]interface{}, channel string) {
 	//定义的三种方式
 	//wx := &wxClass.WxController{}
 	//wx := new(wxClass.WxController)
@@ -337,26 +338,24 @@ func (this *PayController) JsApiPay(bill map[string]interface{}, channel string)
 
 	//获取openid
 	var openid string
-	var openidErr error
+	//var openidErr error
 
-	wxCode := this.GetString("code")
-	if wxCode == "" {
-		this.Redirect(wx.CreateOauthUrlForCode("http://test3.beecloud.cn/wxpay/demo?type=" + channel), 302)
-	}else{
-		wx.SetCode(wxCode)
-		openid, openidErr = wx.GetOpenid()
-		if openidErr != nil {
-			this.Print(openidErr.Error())
-		}
-	}
+	//wxCode := this.GetString("code")
+	//if wxCode == "" {
+	//	this.Redirect(wx.CreateOauthUrlForCode("http://test3.beecloud.cn/wxpay/demo?type=" + channel), 302)
+	//}else{
+	//	wx.SetCode(wxCode)
+	//	openid, openidErr = wx.GetOpenid()
+	//	if openidErr != nil {
+	//		this.Print(openidErr.Error())
+	//	}
+	//}
+	openid = "ofEy7uK2JsSOXVpHHYErRPtrdVWg"
 	bill["openid"] = openid
-
-	fmt.Printf("===%s", bill)
-	fmt.Println("")
 
 	wx.SetParameter("openid", openid)
 	wx.SetParameter("out_trade_no", reflect.ValueOf(bill["bill_no"]).String())
-	wx.SetParameter("total_fee", reflect.ValueOf(bill["total_fee"]).String())
+	wx.SetParameter("total_fee", strconv.FormatInt(reflect.ValueOf(bill["total_fee"]).Int(), 10))
 	wx.SetParameter("trade_type", "JSAPI")
 	wx.SetParameter("body", reflect.ValueOf(bill["title"]).String())
 	wx.SetParameter("notify_url", "http://test3.beecloud.cn/notify")

@@ -62,21 +62,20 @@ func (this WxLibController) GetSign (paramsMap map[string]string, wxKey string )
 	return strings.ToUpper(hex.EncodeToString(sign.Sum(nil)))
 }
 
-
 //xml结构
 func (this WxLibController) ParamsToXml(data map[string]string) string {
-	buf := bytes.NewBufferString("")
+	buf := bytes.NewBufferString("<xml>")
 	for k, v := range data {
 		str := "<![CDATA[%s]]>"
-		flag , _ := regexp.MatchString("^\\d+\\.?\\d.$", v)
+		flag , _ := regexp.MatchString("^\\d+\\.?\\d*$", v)
 		if flag {
 			str = "%s"
 		}
 		buf.WriteString(fmt.Sprintf("<%s>" + str + "</%s>", k, v, k))
 	}
+	buf.WriteString("</xml>")
 	return buf.String()
 }
-
 
 
 func (this WxLibController) Error(strMsg string, err error) error {
