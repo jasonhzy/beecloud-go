@@ -7,7 +7,6 @@ import (
 	"strconv"
 	"time"
 	"encoding/xml"
-	"fmt"
 )
 
 const (
@@ -71,7 +70,6 @@ func (this WxController) CreateOauthUrlForCode(redirectUrl string) string {
 	urlObj["scope"] = "snsapi_base"
 	urlObj["state"] = "STATE#wechat_redirect"
 	codeStr := this.FormatParams(urlObj)
-	fmt.Printf("%s", oauth_code_url + "?" + codeStr)
 	return oauth_code_url + "?" + codeStr
 }
 
@@ -97,7 +95,6 @@ func (this WxController) GetOpenid() (string, error) {
 	if jsonErr != nil {
 		return "", this.Error("get openid json error", jsonErr)
 	}
-	fmt.Printf("%s", res)
 
 	errcode := reflect.ValueOf(res["errcode"])
 	if errcode.IsValid() && errcode.Float() > 0 {

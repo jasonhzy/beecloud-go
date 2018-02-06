@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"time"
 	"strings"
+	"fmt"
 )
 
 type PayController struct {
@@ -162,8 +163,6 @@ func (this *PayController) ToPay() {
 			bill["channel"] = "WX_NATIVE"
 		case "WX_JSAPI": //微信公众号
 			bill["channel"] = "WX_JSAPI"
-			//获取openid
-			this.JsApiPay(bill, channel)
 		case "WX_WAP": //微信H5网页, 请在手机浏览器内测试
 			bill["channel"] = "WX_WAP"
 			//需要参数终端ip，格式如下：
@@ -254,8 +253,6 @@ func (this *PayController) ToPay() {
 			bill["auth_code"] = "13022657110xxxxxxxx"
 		case "BC_WX_JSAPI": //微信公众号
 			bill["channel"] = "BC_WX_JSAPI"
-			//获取openid
-			this.JsApiPay(bill, channel)
 		case "BC_ALI_QRCODE" : //BC支付宝线下扫码
 			bill["channel"] = "BC_ALI_QRCODE"
 		case "BC_ALI_SCAN" : //BC支付宝刷卡
@@ -271,8 +268,7 @@ func (this *PayController) ToPay() {
 			this.Print("No this type.")
 	}
 
-
-	//get openid
+	//微信支付 get openid
 	if this.In_array(channel, []string{"WX_JSAPI", "BC_WX_JSAPI"}) {
 		this.JsApiPay(bill, channel)
 	}
@@ -371,6 +367,7 @@ func (this *PayController) JsApiPay(bill map[string]interface{}, channel string)
 	var openidErr error
 
 	wxCode := this.GetString("code")
+	fmt.Printf("===%s===\n", wxCode)
 	if wxCode == "" {
 		this.Redirect(wx.CreateOauthUrlForCode("http://test3.beecloud.cn/wxpay/demo/pay?type=" + channel), 302)
 	}else{
