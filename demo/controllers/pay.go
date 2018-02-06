@@ -315,17 +315,20 @@ func (this *PayController) ToPay() {
 		if !appId.IsValid() || !strPackage.IsValid() || !signType.IsValid() || !paySign.IsValid()  || !timeStamp.IsValid() {
 			this.Print("wx pay params invalid")
 		}
-		if appId.String() == "" || strPackage.String() == "" || signType.String() == "" || paySign.String() == ""  || timeStamp.Float() == 0 {
+		if appId.String() == "" || strPackage.String() == "" || signType.String() == "" || paySign.String() == ""  || timeStamp.String() == "" {
 			this.Print("wx pay params is empty")
 		}
+		fmt.Printf("%s", res)
 
-		jsapiParameters := make(map[string]interface{})
+		jsapiParameters := make(map[string]string)
 		jsapiParameters["appId"] = appId.String()
-		jsapiParameters["timeStamp"] = timeStamp.Float()
+		jsapiParameters["timeStamp"] = timeStamp.String()
 		jsapiParameters["nonceStr"] = nonceStr.String()
 		jsapiParameters["package"] = strPackage.String()
 		jsapiParameters["signType"] = signType.String()
 		jsapiParameters["paySign"] = paySign.String()
+
+		fmt.Printf("%s", jsapiParameters)
 
 		this.Data["jsapi"] = jsapiParameters
 		this.Data["channel"] = "JSAPI"
@@ -367,7 +370,6 @@ func (this *PayController) JsApiPay(bill map[string]interface{}, channel string)
 	var openidErr error
 
 	wxCode := this.GetString("code")
-	fmt.Printf("===%s===\n", wxCode)
 	if wxCode == "" {
 		this.Redirect(wx.CreateOauthUrlForCode("http://test3.beecloud.cn/wxpay/demo/pay?type=" + channel), 302)
 	}else{
