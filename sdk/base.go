@@ -42,7 +42,7 @@ func (this BaseController) GetTimestamp() int64{
 	return time.Now().UnixNano() / 1000000 //毫秒
 }
 
-func (this BaseController) In_array(strMsg string, list []string) bool {
+func (this BaseController) InArray(strMsg string, list []string) bool {
 	for _, v  := range list  {
 		if strMsg == v {
 			return true
@@ -56,12 +56,16 @@ func (this BaseController) GetApiUrl(url string) string {
 	return api_url + "/" + api_version + "/" + url
 }
 
-func (this BaseController) GetSign(app_id string, timestamp int64, secret string) string{
-	signStr := app_id + strconv.FormatInt(timestamp, 10)+ secret
-
+func (this BaseController) GetMd5(signStr string) string {
 	sign := md5.New()
 	sign.Write([]byte(signStr))
 	return hex.EncodeToString(sign.Sum(nil))
+}
+
+
+func (this BaseController) GetSign(app_id string, timestamp int64, secret string) string{
+	signStr := app_id + strconv.FormatInt(timestamp, 10)+ secret
+	return this.GetMd5(signStr)
 }
 
 //截取字符串 start 起点下标 end 终点下标(不包括)

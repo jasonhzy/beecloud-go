@@ -268,15 +268,15 @@ func (this *PayController) ToPay() {
 	}
 
 	//微信支付 get openid
-	if this.In_array(channel, []string{"WX_JSAPI", "BC_WX_JSAPI"}) {
+	if this.InArray(channel, []string{"WX_JSAPI", "BC_WX_JSAPI"}) {
 		this.GetOpenid(bill, channel)
 	}
 
 	var result []byte
 	var payErr error
-	if this.In_array(channel, []string{"PAYPAL_PAYPAL", "PAYPAL_CREDITCARD", "PAYPAL_SAVED_CREDITCARD"}) {
+	if this.InArray(channel, []string{"PAYPAL_PAYPAL", "PAYPAL_CREDITCARD", "PAYPAL_SAVED_CREDITCARD"}) {
 		result, payErr = this.International_bill(bill)
-	}else if this.In_array(channel, []string{"ALI_OFFLINE_QRCODE", "ALI_SCAN", "BC_ALI_SCAN", "WX_SCAN", "BC_WX_SCAN"}) {
+	}else if this.InArray(channel, []string{"ALI_OFFLINE_QRCODE", "ALI_SCAN", "BC_ALI_SCAN", "WX_SCAN", "BC_WX_SCAN"}) {
 		result, payErr = this.Offline_bill(bill)
 	}else {
 		result, payErr = this.Bill(bill)
@@ -303,7 +303,7 @@ func (this *PayController) ToPay() {
 	credit_card_id := reflect.ValueOf(res["credit_card_id"])
 	id := reflect.ValueOf(res["id"])
 
-	if this.In_array(channel, []string{"WX_JSAPI", "BC_WX_JSAPI"}) { //微信公众号支付
+	if this.InArray(channel, []string{"WX_JSAPI", "BC_WX_JSAPI"}) { //微信公众号支付
 		appId := reflect.ValueOf(res["app_id"])
 		strPackage := reflect.ValueOf(res["package"])
 		signType := reflect.ValueOf(res["sign_type"])
