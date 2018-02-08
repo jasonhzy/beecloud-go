@@ -367,7 +367,7 @@ func (this *PayController) GetOpenid(bill map[string]interface{}, channel string
 
 	wxCode := this.GetString("code")
 	if wxCode == "" {
-		this.Redirect(wx.CreateOauthUrlForCode("http://test3.beecloud.cn/wxpay/demo/pay?type=" + channel), 302)
+		this.Redirect(wx.CreateOauthUrlForCode("http://www.example.com/wxpay/demo?type=" + channel), 302)
 	}else{
 		wx.SetCode(wxCode)
 		openid, openidErr = wx.GetOpenid()
