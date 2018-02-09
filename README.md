@@ -149,7 +149,7 @@ func (this *PayController) RegisterApp () {
         result, err := this.Bill_query_byid(bill_id) //根据ID查询的方法
     }
 
-注：具体的请求参数和返回参数，请参考[线上支付REST API](https://github.com/beecloud/beecloud-rest-api/tree/master/online) **【5.订单查询】【11.支付订单查询(指定ID)】**部分
+注：具体的请求参数和返回参数，请参考[线上支付REST API](https://github.com/beecloud/beecloud-rest-api/tree/master/online) **【5.订单查询】【11.支付订单查询(指定ID)】** 部分
 
 ## 订单总数查询
 
@@ -168,7 +168,7 @@ func (this *PayController) RegisterApp () {
     }
 
 注：具体的请求参数和返回参数，请参考[线上支付REST
-API](https://github.com/beecloud/beecloud-rest-api/tree/master/online) **【6. 订单总数查询】**部分
+API](https://github.com/beecloud/beecloud-rest-api/tree/master/online) **【6. 订单总数查询】** 部分
 
 ## 发起退款
 
@@ -189,7 +189,7 @@ API](https://github.com/beecloud/beecloud-rest-api/tree/master/online) **【6. �
     }
 
 注：具体的请求参数和返回参数，请参考[线上支付REST
-API](https://github.com/beecloud/beecloud-rest-api/tree/master/online) **【3. 退款】**部分
+API](https://github.com/beecloud/beecloud-rest-api/tree/master/online) **【3. 退款】** 部分
 
 ## 退款订单查询
 
@@ -218,7 +218,7 @@ API](https://github.com/beecloud/beecloud-rest-api/tree/master/online) **【3. �
     }
 
 注：具体的请求参数和返回参数，请参考[线上支付REST
-API](https://github.com/beecloud/beecloud-rest-api/tree/master/online) **【7. 退款查询】【10.退款订单查询(指定ID)】**部分
+API](https://github.com/beecloud/beecloud-rest-api/tree/master/online) **【7. 退款查询】【10.退款订单查询(指定ID)】** 部分
 
 
 ## 退款总数查询
@@ -238,7 +238,7 @@ API](https://github.com/beecloud/beecloud-rest-api/tree/master/online) **【7. �
     }
 
 注：具体的请求参数和返回参数，请参考[线上支付REST
-API](https://github.com/beecloud/beecloud-rest-api/tree/master/online) **【8. 退款总数查询】**部分
+API](https://github.com/beecloud/beecloud-rest-api/tree/master/online) **【8. 退款总数查询】** 部分
 
 ## 退款状态更新
 
@@ -257,7 +257,7 @@ API](https://github.com/beecloud/beecloud-rest-api/tree/master/online) **【8. �
     }
 
 注：具体的请求参数和返回参数，请参考[线上支付REST
-API](https://github.com/beecloud/beecloud-rest-api/tree/master/online) **【9. 退款状态更新】**部分
+API](https://github.com/beecloud/beecloud-rest-api/tree/master/online) **【9. 退款状态更新】** 部分
 
 ## BeeCloud企业打款 - 打款到银行卡
 
@@ -277,7 +277,7 @@ API](https://github.com/beecloud/beecloud-rest-api/tree/master/online) **【9. �
         result, err := this.Gateway_transfer(data)
     }
 
-注：具体的请求参数和返回参数，请参考[企业打款REST API](https://github.com/beecloud/beecloud-rest-api/tree/master/transfer) **【BeeCloud企业打款 - 打款到银行卡】**部分
+注：具体的请求参数和返回参数，请参考[企业打款REST API](https://github.com/beecloud/beecloud-rest-api/tree/master/transfer) **【BeeCloud企业打款 - 打款到银行卡】** 部分
 
 ## 微信企业打款/微信红包
 
@@ -297,5 +297,4 @@ API](https://github.com/beecloud/beecloud-rest-api/tree/master/online) **【9. �
         result, err = this.Transfer(data)
     }
 
-注：具体的请求参数和返回参数，请参考[企业打款REST
-API](https://github.com/beecloud/beecloud-rest-api/tree/master/transfer) **【微信企业打款/微信红包】**部分
+注：具体的请求参数和返回参数，请参考[企业打款REST API](https://github.com/beecloud/beecloud-rest-api/tree/master/transfer) **【微信企业打款/微信红包】** 部分
